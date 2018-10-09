@@ -87,3 +87,63 @@ def knn_decision_regions(X, y, n_neighbors, **kwargs):
     # 決定境界をプロットする
     sns.set()
     plot_decision_regions(X, y, neigh, **kwargs)
+
+
+def collate(rows, cols, *params, titles=None):
+    """NumPy.ndarrayをプロットする"""
+
+    if titles:
+        
+        # パラメータの数 = プロット時のタイトル数
+        assert len(params) == len(titles)
+
+    for i in range(rows):
+        for j in range(cols):
+            ind = cols * i + j
+
+            title = None
+            try:
+
+                # 画像とタイトル ( あれば ) を取り出す
+                img = params[ind]
+                if titles:
+                    title = titles[ind]
+
+            except IndexError:
+                pass
+            else:
+
+                # プロット位置の指定 + タイトル
+                plt.subplot(rows, cols, ind + 1)
+                if title:
+                    plt.title(title)
+
+                # 画像をプロットする
+                plt.imshow(img, cmap=plt.cm.gray)
+
+        # end of for j in range(cols) ...
+    # end of for i in range(rows) ...
+
+    plt.show()
+
+
+def plot_conv_weights(conv, nr, nc):
+    """畳み込み層の重みをまとめてプロットする"""
+
+    # 重みを取り出す ( NumPy.ndarray )
+    w = conv.weight.data.numpy()
+
+    # 入出力チャンネル数、フィルタのサイズを取得する
+    out_channels, in_channels, h_kernel, w_kernel = \
+        w.shape
+
+    # nr, nc で指定した分だけプロットする
+    # ※実際に存在するフィルタの数の方が多い場合があるため
+    ws = []
+    for i in range(nr):
+        for j in range(nc):
+            ws.append(w[i, j, :, :])
+
+            # ※タイトルどうする?
+
+    collate(nr, nc, *ws)
